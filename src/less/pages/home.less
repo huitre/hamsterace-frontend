@@ -1,0 +1,79 @@
+#home {
+  body, section {
+    position: relative;
+    background-color: #549395;
+   /* background: linear-gradient(to bottom, #3acfd5 0%, #eee 60%) no-repeat;*/
+  }
+  svg#background {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(154,204, 205);
+    z-index: 0;
+  }
+
+  svg#title {
+    position: absolute;
+  }
+  section {
+    width: 100%;
+    min-height: 300px;
+    position: relative;
+    background-color: #eee;
+    z-index: -1;
+  }
+  img {
+    position: relative;
+    display: block;
+    margin: auto;
+    margin-left: auto;
+    width: 90%;
+  }
+
+  #img-header {
+    top: 16em;
+    /* margin-top: 35px; */
+    height: 16%;
+    width: 8%;
+    z-index: 2;
+    position: relative;
+    background-color: #fff;
+    margin: auto;
+  }
+  #form-wrapper {
+    position: relative;
+    width: 19%;
+    padding: 2em;
+    margin: 13em auto auto;
+    min-width: 21em;
+    z-index: 1;
+    background: #fff;
+    border: 1em solid transparent;
+
+    box-shadow: 0px 0px 43px rgba(0, 0,0, 0.2);
+
+    /*-moz-border-image: -moz-linear-gradient(top, #3acfd5 0%, #549395 60%);
+    -webkit-border-image: -webkit-linear-gradient(top, #3acfd5 0%, #549395 60%);*/
+  /*  border-image: linear-gradient(to bottom, #3acfd5 0%, #549395 60%);*/
+
+    border-image-slice: 1;
+    margin-bottom: 30px;
+  }
+
+  #form-wrapper button {
+    margin: 5px 10px 5px;
+  }
+/*
+  input {
+    background-color: none;
+  }
+*/
+  /*
+   * Ce div sert a creer une zone vide blanche pour que 
+   * section ne recouvre pas le svg anime
+   */
+  div#hax-top {height: 400px;}
+}
