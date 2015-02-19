@@ -7,62 +7,126 @@ var React = require('react'),
     RaisedButton = mui.RaisedButton,
     FlatButton = mui.FlatButton,
     TextField = mui.TextField,
-    Paper = mui.Paper;
+    Paper = mui.Paper,
+    FloatButton = mui.FloatingActionButton,
+    IconButton = mui.IconButton;
 
 
-var Comment = React.createClass({
-  getInitialState : function () {
-    return {}
-  },
-
-  componentDidMount : function () {
-
-  },
-  
+var CommentForm = React.createClass({
   render: function () {
     return (
-      <Paper zDepth={2}>
-        <div className="avatar">
-          <img src="" alt="avatar"/>
-        </div>
-        <div className="content">
-          {this.props.content}
-        </div>
-        <div className="date">
-          {this.props.date}
-        </div>
-        <FlatButton label="reply"/>
-      </Paper>
+      <div className="comments">
+          <img src={this.props.avatar} alt="avatar" className="avatar"/>
+          <div className="inline-form">
+            <span className="author">{this.props.author.firstname} {this.props.author.name}</span>
+            <form action={this.props.action} method="post" onSubmit={this.props.onCommentFormSubmit}>
+              <TextField
+                name="content" 
+                multiLine={true} />
+              <IconButton icon="action-done"/>
+            </form>
+          </div>
+      </div>
     );
   }
-})
+});
+
+var Comment = React.createClass({
+  render: function () {
+    return (
+      <div className="comments">
+          <img src={this.props.avatar} alt="avatar" className="avatar"/>
+          <div>
+            <span className="author">{this.props.author.firstname} {this.props.author.name}</span>
+            <p className="value">{this.props.content}</p>
+            <p className="date">
+            {this.props.date}
+            </p>
+          </div>
+      </div>
+    );
+  }
+});
+
+var CommentBox = React.createClass({
+  render : function () {
+    var CommentList = null;
+    if (this.props.data.length) {
+      CommentList = this.props.data.map(function (post) {
+        if (!post.Person)
+          return <div/>
+        var updatedAt = new Date(post.updatedAt).toFrenchDate(),
+            image = post.Person ? post.Person.Image ? 'images/' + post.Person.Image.resource : 'images/avatar-not-found.gif' : 'images/avatar-not-found.gif',
+            author = post.Person ? post.Person.PersonDetails[0] : '',
+            key = 'comment-' + post.id;
+        return (
+            <Comment 
+              avatar={image}
+              author={author} 
+              date={updatedAt} 
+              content={post.content}
+              key={key} />
+        );
+      });
+    }
+    return (
+      <div>
+        {CommentList}
+        <CommentForm
+              avatar={this.props.avatar} 
+              author="TODO"
+              action="me/feed/comment/"
+              postId={this.props.postId}
+              onCommentFormSubmit={this.props.onCommentFormSubmit} 
+              key={'commentForm-' + this.props.postId}/>
+      </div>
+    );
+  }
+});
 
 var Post = React.createClass({
   getInitialState : function () {
-    return {}
+    return {comments: this.props.comments}
   },
 
+  handleCommentSubmit : function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var self = this;
+    var action = H.toApiUrl(e.currentTarget.action),
+        req = H.ajax({
+          url : Config.api.url + action + this.props.postId,
+          form: e.currentTarget,
+          credentials: true,
+          type: 'json',
+          success : function (res, req) {
+            this.setState({comments: this.state.comments.concat([res])});
+          }.bind(this),
+          error : function (e) {
+            console.log(e);
+          }
+        })
+    req.send();
+  },
   render: function () {
+    var updatedAt = new Date(this.props.date).toFrenchDate(), self = this;
     return (
       <article>
-      <Paper zDepth={1} className="post">
-        <div>
-          <div className="avatar">
-            <img src="data:image/jpeg;base64,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" alt="avatar"/>
+        <Paper zDepth={1} className="card">
+          <div className="content">
+            <img src={this.props.avatar} alt="avatar" className="avatar"/>
+            <div>
+              <p className="author">{this.props.author.firstname} {this.props.author.name}</p>
+              <p className="date">{updatedAt}</p>
+              <p className="value">{this.props.content}</p>
+            </div>
           </div>
-          <span className="name">{this.props.author}</span>
-        </div>
-        <div className="content">
-          {this.props.content}
-        </div>
-        <div className="date">
-          {this.props.date}
-        </div>
-        <FlatButton label="reply"/>
-      </Paper>
-      <Paper zDepth={2} className="comment">
-        {this.props.comment}
-      </Paper>
+          <CommentBox 
+            avatar='images/avatar-not-found.gif'
+            postId={this.props.postId}
+            data={this.state.comments} 
+            onCommentFormSubmit={this.handleCommentSubmit} />
+        </Paper>
       </article>
     );
   }
@@ -70,34 +134,74 @@ var Post = React.createClass({
 
 
 var PostList = React.createClass({
+  onCommentFormSubmit : function () {
+
+  },
+
   render: function () {
     var post = this.props.data.map(function (post) {
-      console.log(post);
+      var image = post.Person.Image ? 'images/' + post.Person.Image.resource : 'images/avatar-not-found.gif',
+          key = 'post-' + post.id;
       return (
-        <Post author={post.PersonId} 
+        <Post avatar={image}
+              author={post.Person.PersonDetails[0]} 
               date={post.updatedAt} 
               content={post.content} 
-              comment={post.comment} />
+              comments={post.Comments} 
+              postId={post.id} 
+              key={key} />
       );
     });
     return (
       <section>
+        <div className="comments">
+          <img src={this.props.avatar} alt="avatar" className="avatar"/>
+          <div className="inline-form">
+            <span className="author"></span>
+            <form action={this.props.action} method="post" onSubmit={this.props.onCommentFormSubmit}>
+              <TextField
+                name="content" 
+                multiLine={true} />
+              <IconButton icon="action-done"/>
+            </form>
+          </div>
+        </div>
         {post}
+        <div id="newPost">
+          <FloatButton iconClassName="mui-app-bar-navigation-icon-button" onClick={this.onNewPostClickHandler}/>
+        </div>
       </section>
     )
   }
 })
 
 var Feed = React.createClass({
-  
-  mixins : [Router.state, Router.Navigation],
-
   getInitialState: function() {
     return {data : []};
   },
 
+  onCommentFormSubmit : function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var self = this;
+    var action = H.toApiUrl(e.currentTarget.action),
+        req = H.ajax({
+          url : Config.api.url + action,
+          form: e.currentTarget,
+          credentials: true,
+          type: 'json',
+          success : function (res, req) {
+            this.setState({comments: this.state.data.concat([res])});
+          }.bind(this),
+          error : function (e) {
+            self.isLogged = false;
+          }
+        })
+    req.send();
+  },
+
   load : function () {
-    var req = ajax({
+    var req = H.ajax({
           url : Config.api.url + '/me/feed',
           credentials: true,
           type: 'json',
@@ -114,11 +218,12 @@ var Feed = React.createClass({
 
   componentDidMount: function() {
     this.load();
+    setInterval(this.load, 2000);
   },
 
   render: function() {
     return (
-      <PostList data={this.state.data}/>
+      <PostList data={this.state.data} onCommentFormSubmit={this.onCommentFormSubmit} action="/me/feed/post/"/>
     );
   }  
 });

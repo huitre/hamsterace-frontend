@@ -1,26 +1,55 @@
 .me {
   article {
-    margin: 5em;
-  }
+    margin: 5em auto 5em auto;
+  } 
 
   .mui-app-bar {
-    top: 0
+    background-color: #3F51B5;
+    top: 0;
+    height: auto;
+    position: relative;
+    padding: 0;
+
   }
+
+  .mui-app-bar h1 {
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 80px;
+    font-family: "RobotoDraft", "Roboto", sans-serif;
+    color: white;
+    margin-left: 48px;
+  }
+
+  .mui-toolbar .mui-toolbar-group.mui-right:last-child {
+    margin-right: 0;
+  }
+
+  nav { 
+    height: 64px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: baseline;
+  }
+  .mui-icon {
+    color: white;
+  }
+
   .mui-left-nav {
     width: 19em
   }
 
-  article .avatar {
-    border-radius: 50%;
-    border: 1px solid black;
-    width: 6em;
-    overflow: hidden;
-    height: 6em;
-    margin: 2em;
-    display: inline-block;
+  section#content {
+    margin-left : 21em
   }
 
-  section#content {
-    margin-left : 21em 
+  section#content section {
+    margin: auto;
+    width: 80%
+  }
+  #newPost {
+    position: fixed;
+    right: 5%;
+    bottom: 5%;
   }
 }

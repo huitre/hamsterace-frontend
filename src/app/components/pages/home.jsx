@@ -1,14 +1,16 @@
 /** In this file, we create a React component which incorporates components provided by material-ui */
 
 var React = require('react'),
-  Router = require('react-router'),
-  RouteHandler = Router.RouteHandler,
+    Router = require('react-router'),
+    RouteHandler = Router.RouteHandler,
 
-  mui = require('material-ui'),
-  RaisedButton = mui.RaisedButton,
-  FlatButton = mui.FlatButton,
-  TextField = mui.TextField,
-  Paper = mui.Paper,
+    mui = require('material-ui'),
+    RaisedButton = mui.RaisedButton,
+    FlatButton = mui.FlatButton,
+    TextField = mui.TextField,
+    Paper = mui.Paper,
+
+    Config = require('../../config'),
 
   SvgAnimatedBackground = require('../svganimatedbg.jsx');
 
@@ -28,14 +30,17 @@ var Main = React.createClass({
     e.stopPropagation();
     e.preventDefault();
     var action = e.currentTarget.action.replace(window.location.host, '').replace(window.location.protocol, '').replace('//', '');
-    var req = ajax({
-          url : this.props.apiUrl + action,
+    var req = H.ajax({
+          url : Config.api.url + action,
           form: e.currentTarget,
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            self.setState({isLogged: true});
-            self.setState({data : req.responseTxt})
+            self.setState({data : req.responseTxt});
+            H.cookie('isLogged', true, 20);
+            this.setState({
+              isLogged: this.isLogged()
+            });
             self.transitionTo('/me/feed');
           },
           error : function (e) {
@@ -43,6 +48,16 @@ var Main = React.createClass({
           }
         })
     req.send();
+  },
+
+  isLogged : function () {
+    if (H.cookie('isLogged'))
+      return true;
+    return false;
+  },
+
+  componentDidMount: function () {
+    this.setState({isLogged:this.isLogged()});
   },
 
   onGoogleClick: function () {

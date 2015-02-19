@@ -4,10 +4,13 @@ var React = require('react'),
   Avatar = require('./avatar.jsx'),
 
   menuItems = [
-    { route: 'me/feed', text: 'Profil' },
-    { type: mui.MenuItem.Types.SUBHEADER, text: 'Resources' },
-    { type: mui.MenuItem.Types.LINK, payload: 'https://github.com/callemall/material-ui', text: 'GitHub' },
-
+    { type: mui.MenuItem.Types.SUBHEADER, text: 'Navigation' },
+    { route: '/me/', text: 'Mon Profil' },
+    { route: '/me/feed', text: 'Mes Actus' },
+    { route: '/me/stats', text: 'Mes Statistiques' },
+    { route: '/me/friends', text: 'Mes Amis' },
+    { route: '/me/badges', text: 'Mes Badges' },
+    { route: '/me/guild', text: 'Ma guilde' }
   ];
 
 var LeftNav = React.createClass({
@@ -21,7 +24,7 @@ var LeftNav = React.createClass({
   },
 
   render: function() {
-    var header = <div className="logo" onClick={this._onHeaderClick}>material ui</div>;
+    var header = <Avatar/>;
 
     return (
       <mui.LeftNav 
