@@ -4,7 +4,7 @@ var React = require('react'),
     Config = require('../../config'),
     mui = require('material-ui'),
     Router = require('react-router'),
-    RaisedButton = mui.RaisedButton,
+//    RaisedButton = mui.RaisedButton,
     FlatButton = mui.FlatButton,
     TextField = mui.TextField,
     Paper = mui.Paper,
@@ -51,14 +51,14 @@ var Comment = React.createClass({
 var CommentBox = React.createClass({
   render : function () {
     var CommentList = null;
+
     if (this.props.data.length) {
       CommentList = this.props.data.map(function (post) {
-        if (!post.Person)
-          return <div/>
         var updatedAt = new Date(post.updatedAt).toFrenchDate(),
             image = post.Person ? post.Person.Image ? 'images/' + post.Person.Image.resource : 'images/avatar-not-found.gif' : 'images/avatar-not-found.gif',
             author = post.Person ? post.Person.PersonDetails[0] : '',
             key = 'comment-' + post.id;
+
         return (
             <Comment 
               avatar={image}
@@ -77,8 +77,7 @@ var CommentBox = React.createClass({
               author="TODO"
               action="me/feed/comment/"
               postId={this.props.postId}
-              onCommentFormSubmit={this.props.onCommentFormSubmit} 
-              key={'commentForm-' + this.props.postId}/>
+              onCommentFormSubmit={this.props.onCommentFormSubmit} />
       </div>
     );
   }
@@ -92,7 +91,6 @@ var Post = React.createClass({
   handleCommentSubmit : function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var self = this;
     var action = H.toApiUrl(e.currentTarget.action),
         req = H.ajax({
           url : Config.api.url + action + this.props.postId,
@@ -125,7 +123,8 @@ var Post = React.createClass({
             avatar='images/avatar-not-found.gif'
             postId={this.props.postId}
             data={this.state.comments} 
-            onCommentFormSubmit={this.handleCommentSubmit} />
+            onCommentFormSubmit={this.handleCommentSubmit} 
+            key={'commentbox-' + this.props.postId}/>
         </Paper>
       </article>
     );
@@ -134,10 +133,6 @@ var Post = React.createClass({
 
 
 var PostList = React.createClass({
-  onCommentFormSubmit : function () {
-
-  },
-
   render: function () {
     var post = this.props.data.map(function (post) {
       var image = post.Person.Image ? 'images/' + post.Person.Image.resource : 'images/avatar-not-found.gif',
@@ -158,7 +153,7 @@ var PostList = React.createClass({
           <img src={this.props.avatar} alt="avatar" className="avatar"/>
           <div className="inline-form">
             <span className="author"></span>
-            <form action={this.props.action} method="post" onSubmit={this.props.onCommentFormSubmit}>
+            <form action={this.props.action} method="post" onSubmit={this.props.onPostFormSubmit}>
               <TextField
                 name="content" 
                 multiLine={true} />
@@ -167,9 +162,6 @@ var PostList = React.createClass({
           </div>
         </div>
         {post}
-        <div id="newPost">
-          <FloatButton iconClassName="mui-app-bar-navigation-icon-button" onClick={this.onNewPostClickHandler}/>
-        </div>
       </section>
     )
   }
@@ -180,10 +172,9 @@ var Feed = React.createClass({
     return {data : []};
   },
 
-  onCommentFormSubmit : function (e) {
+  onPostFormSubmit : function (e) {
     e.preventDefault();
     e.stopPropagation();
-    var self = this;
     var action = H.toApiUrl(e.currentTarget.action),
         req = H.ajax({
           url : Config.api.url + action,
@@ -191,10 +182,11 @@ var Feed = React.createClass({
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            this.setState({comments: this.state.data.concat([res])});
+            this.state.data.unshift(res);
+            this.setState({data: this.state.data});
           }.bind(this),
           error : function (e) {
-            self.isLogged = false;
+            console.log(arguments)
           }
         })
     req.send();
@@ -206,8 +198,7 @@ var Feed = React.createClass({
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            var response = JSON.parse(req.response);
-            this.setState({data : response.feed})
+            this.setState({data : res.feed})
           }.bind(this),
           error : function (data, status,err) {
             console.error(status, err.toString());
@@ -218,14 +209,37 @@ var Feed = React.createClass({
 
   componentDidMount: function() {
     this.load();
-    setInterval(this.load, 2000);
+    //setInterval(this.load, 2000);
   },
 
   render: function() {
+    var title = 'Hamsterace',
+        iconMenuItems = [
+           { payload: '1', text: 'Live Answer', icon: 'communication_phone', number: '10' },
+           { payload: '2', text: 'Voicemail', icon: 'communication_voicemail',  number: '5' },
+           { payload: '3', text: 'Starred', icon: 'action_stars', number: '3' },
+           { payload: '4', text: 'Shared', icon: 'action_thumb_up',  number: '12' }
+        ];
     return (
-      <PostList data={this.state.data} onCommentFormSubmit={this.onCommentFormSubmit} action="/me/feed/post/"/>
+      <section id="content">
+        <AppBar showMenuIconButton={false}>
+          <nav>
+            <DropDownIcon icon="navigation-more-vert" menuItems={iconMenuItems} />
+            <IconButton
+              className="mui-app-bar-navigation-icon-button"
+              icon={ this.props.icon || "navigation-menu"}
+              onTouchTap={this._onMenuIconButtonTouchTap} />
+            <IconButton icon="action-search" />
+          </nav>
+          <h1>Hamsterace > me > feed</h1>
+          <div id="mainAction">
+            <FloatButton iconClassName="mui-app-bar-navigation-icon-button" onClick={this.onNewPostClickHandler}/>
+          </div>
+        </AppBar>
+        <PostList data={this.state.data} onPostFormSubmit={this.onPostFormSubmit} action="/me/feed/post/"/>
+      </section>
     );
   }  
 });
-
+ 
 module.exports = Feed;

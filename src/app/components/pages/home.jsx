@@ -5,7 +5,6 @@ var React = require('react'),
     RouteHandler = Router.RouteHandler,
 
     mui = require('material-ui'),
-    RaisedButton = mui.RaisedButton,
     FlatButton = mui.FlatButton,
     TextField = mui.TextField,
     Paper = mui.Paper,
@@ -36,10 +35,10 @@ var Main = React.createClass({
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            self.setState({data : req.responseTxt});
             H.cookie('isLogged', true, 20);
-            this.setState({
-              isLogged: this.isLogged()
+            self.setState({
+              data : res,
+              isLogged : true
             });
             self.transitionTo('/me/feed');
           },
@@ -57,7 +56,25 @@ var Main = React.createClass({
   },
 
   componentDidMount: function () {
-    this.setState({isLogged:this.isLogged()});
+    var self = this;
+    var req = H.ajax({
+          url : Config.api.url + '/me',
+          credentials: true,
+          type: 'json',
+          async: false,
+          success : function (res, req) {
+            H.cookie('isLogged', true, 20);
+            self.setState({
+              data : res,
+              isLogged : true
+            });
+            self.transitionTo('/me/feed');
+          },
+          error : function (e) {
+            self.setState({data: [], isLogged: false});
+          }
+        })
+    req.send();
   },
 
   onGoogleClick: function () {
@@ -119,7 +136,7 @@ var Main = React.createClass({
       );
     }
     return (
-      <RouteHandler apiUrl={this.props.apiUrl}/>
+      <RouteHandler me={this.state.data}/>
     )
   }  
 });
