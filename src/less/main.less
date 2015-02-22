@@ -5,7 +5,7 @@
 //Define a custom less file to override any variables defined in scaffolding.less
 @import "custom-overrides.less";
 
-
+@import "config.less";
 
 @import "pages/home.less";
 @import "pages/me.less";
@@ -16,15 +16,14 @@ body {
 
 article .avatar {
     border-radius: 3px;
-    max-width: 6em;
-    height: 100%;
-    width: 100%;
+    width: 6em;
     overflow: hidden;
     margin: 2em;
 }
 
 .card {
     width: 100%;
+    position: relative;
 }
 
 .card .content, .card .comments {
@@ -51,6 +50,25 @@ article .avatar {
     color: #727272 !important;
 }
 
+#newPost .avatar {
+    top: 0;
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 7em;
+    margin: 0;
+}
+
+#newPost .comments {
+    padding: 0 0 0 8em;
+}
+
+#newPost h1.comments  {
+    font-size: 1.5em;
+    border-bottom: none;
+    padding-left: 5.2em;
+}
+
 .card .comments .value {
     color: #727272;
 }
@@ -60,12 +78,20 @@ article .avatar {
 }
 
 .card .comments img {
-    max-width: 3em;
+    width: 2.3em;
 }
 
 .card .content > div {
     margin: 5px 8px;
 
+}
+
+.card .mui-drop-down-icon {
+    position: absolute;
+    right: -12px;
+    top: 12px;
+    padding: 0;
+    margin: 0 !important;
 }
 
 .card .author {

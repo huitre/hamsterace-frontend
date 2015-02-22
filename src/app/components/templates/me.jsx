@@ -3,15 +3,8 @@ var React = require('react');
     RouteHandler = Router.RouteHandler,
 
     mui = require('material-ui'),
-    //AppBar = require('../appbar.jsx'),
-    LeftNav = require('../leftnav.jsx'),
-    AppBar = mui.AppBar,
     AppCanvas = mui.AppCanvas,
-    Menu = mui.Menu,
-    IconButton = mui.IconButton,
-    Toolbar = mui.Toolbar,
-    ToolbarGroup = mui.ToolbarGroup,
-    DropDownIcon = mui.DropDownIcon;
+    LeftNav = require('../leftnav.jsx');
 
 var Me = React.createClass({
 

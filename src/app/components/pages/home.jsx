@@ -63,6 +63,8 @@ var Main = React.createClass({
           type: 'json',
           async: false,
           success : function (res, req) {
+            console.log(res, req);
+            H.cookie('profile', res, 20);
             H.cookie('isLogged', true, 20);
             self.setState({
               data : res,
@@ -75,6 +77,7 @@ var Main = React.createClass({
           }
         })
     req.send();
+    this.setState({isLogged: this.isLogged()})
   },
 
   onGoogleClick: function () {
@@ -141,4 +144,6 @@ var Main = React.createClass({
   }  
 });
 
-module.exports = Main;
+
+if (typeof module !== 'undefined')
+  module.exports = Main;

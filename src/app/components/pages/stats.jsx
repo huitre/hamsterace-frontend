@@ -1,41 +1,50 @@
-/** In this file, we create a React component which incorporates components provided by material-ui */
-
 var React = require('react'),
-    Config = require('../../config'),
-    mui = require('material-ui'),
     Router = require('react-router'),
-    RaisedButton = mui.RaisedButton,
-    FlatButton = mui.FlatButton,
-    TextField = mui.TextField,
-    Paper = mui.Paper,
-    IconButton = mui.IconButton;
+    mui = require('material-ui'),
+    ReactD3 = require('react-d3'),
+    BarChart = ReactD3.BarChart,
+    Config = require('../../config'),
 
+    PostList = require('../postlist.jsx').PostList,
+    Post = require('../postlist.jsx').Post,
+    HappBar = require('../happbar.jsx');
 
-var PostList = React.createClass({
-  render: function () {
-    
-    var post = this.props.data.map(function (post) {
-      var image = post.Person.Image ? 'images/' + post.Person.Image.resource : 'images/avatar-not-found.gif',
-          key = 'post-' + post.id;
-      return (
-        <Post avatar={image}
-              author={post.Person.PersonDetails[0]} 
-              date={post.updatedAt} 
-              content={post.content} 
-              comments={post.Comments} 
-              postId={post.id} 
-              key={key} />
-      );
-    });
+var StatsList = React.createClass({displayName: 'StatsList',
+  render: function () {    
+    var distanceStats = null,
+        speedStats = null;
+
+    if (this.props.data.distance) {
+      var distanceStatsData = [{
+            name : "distance en " + this.props.data.distance.units,
+            values : null
+          }];
+      distanceStatsData[0].values = this.props.data.distance.datas.map(function (data, i) {
+        return {
+          x : i,
+          y : data.distance * 1000
+        }
+      });
+      console.log(distanceStatsData);
+      distanceStats = (
+          <Post>
+            <BarChart
+              data={distanceStatsData}
+              width={400}
+              height={400}
+              margin={{top: 10, bottom: 50, left: 50, right: 10}}/>
+          </Post>
+        );
+    }
     return (
       <section>
-        {post}
+        {distanceStats}
       </section>
     )
   }
 })
 
-var Stats = React.createClass({
+var Stats = React.createClass({displayName: 'Stats',
   getInitialState: function() {
     return {data : []};
   },
@@ -46,11 +55,11 @@ var Stats = React.createClass({
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            var response = JSON.parse(req.response);
-            this.setState({data : response.feed})
+            this.setState({data : res.stats})
           }.bind(this),
           error : function (data, status,err) {
             console.error(status, err.toString());
+            this.transitionTo('/');
           }
         })
     req.send();
@@ -62,9 +71,19 @@ var Stats = React.createClass({
 
   render: function() {
     return (
-      <PostList data={this.state.data}/>
+      <section id="content">
+        <HappBar
+        title="Hamsterace > me > stats" 
+        onClickHandler={this.onNewPostClick}/>
+        <StatsList 
+          data={this.state.data} 
+          onPostFormSubmit={this.onPostFormSubmit} 
+          action="/me/feed/post/" 
+          avatar="images/avatar-not-found.gif"/>
+      </section>
     );
   }  
 });
 
-module.exports = Stats;
+if (typeof module !== 'undefined')
+  module.exports = Stats;
