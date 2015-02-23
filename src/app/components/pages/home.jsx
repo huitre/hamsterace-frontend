@@ -102,7 +102,7 @@ var Main = React.createClass({
           <g >\
              <text x="190" y="0" id="title"\
               style="font-family: Chango;\
-                       font-size  : 5.05em;\
+                       font-size  : 5.65em;\
                        stroke     : #996300;\
                        fill       : #eee;\
                        stroke-width: 4;\

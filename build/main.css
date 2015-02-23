@@ -2832,14 +2832,15 @@ body {
   width: 24px;
 }
 .me .mui-left-nav {
-  /* width: 19em; */
+  width: 19em;
 }
 .me section#content {
   margin-left: 21em;
 }
 .me section#content section {
-  margin: 132px auto;
+  margin: auto;
   width: 80%;
+  margin-top: 12em;
 }
 .me #mainAction {
   position: absolute;
@@ -2911,7 +2912,6 @@ article .avatar {
   font-size: 1.5em;
   border-bottom: none;
   padding-left: 5.2em;
-  color: #212121;
 }
 .card .comments .value {
   color: #727272;
@@ -2939,7 +2939,6 @@ article .avatar {
 }
 .card .comments .date {
   font-size: 1em;
-  padding-left: 5px;
 }
 .card .content .date {
   color: #727272;
