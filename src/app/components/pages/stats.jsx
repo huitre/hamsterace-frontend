@@ -1,8 +1,7 @@
 var React = require('react'),
     Router = require('react-router'),
     mui = require('material-ui'),
-    ReactD3 = require('react-d3'),
-    AreaChart = ReactD3.LineChart,
+    LineChart = require('../charts/linechart.jsx'),
     Config = require('../../config'),
 
     PostList = require('../postlist.jsx').PostList,
@@ -10,42 +9,16 @@ var React = require('react'),
     HappBar = require('../happbar.jsx');
 
 var StatsList = React.createClass({displayName: 'StatsList',
-  render: function () {    
-    var distanceStats = null,
-        speedStats = null;
 
-    if (this.props.data.distance) {
-      this.props.data.distance.datas = this.props.data.distance.datas.slice(0, 40);
-      var distanceStatsData = [{
-            name : "distance en " + this.props.data.distance.units,
-            values : null
-          }];
-      distanceStatsData[0].values = this.props.data.distance.datas.map(function (data) {
-        return {
-          x : new Date(data.createdAt),
-          y : data.distance * 1000
-        }
-      });
-      
-      distanceStats = (
-          <Post>
-            <AreaChart
-              data={distanceStatsData}
-              width={1400}
-              height={500}
-              legend={true}
-              xAxisTickInterval={{unit: 'hours', interval: 1}}  title="Distance"/>
-          </Post>
-        );
-    }
-
-    if (this.props.data.speed) {
-      this.props.data.speed.datas = this.props.data.speed.datas.slice(0, 40);
+  // Display a zoomable line chart with distance values
+  renderSpeed : function (data) {
+    if (data.speed) {
+      //this.props.data.speed.datas = data.speed.datas.slice(0, 40);
       var speedStatsData = [{
-            name : "vitesse en " + this.props.data.speed.units,
+            name : "vitesse en " + data.speed.units,
             values : null
           }];
-      speedStatsData[0].values = this.props.data.speed.datas.map(function (data) {
+      speedStatsData[0].values = data.speed.data.map(function (data) {
         return {
           x : new Date(data.time),
           y : data.speed
@@ -54,19 +27,77 @@ var StatsList = React.createClass({displayName: 'StatsList',
       
       speedStats = (
           <Post>
-            <AreaChart
+            <LineChart
               data={speedStatsData}
-              width={1400}
+              width={1200}
               height={500}
               legend={true}
-              xAxisTickInterval={{unit: 'hours', interval: 1}}  title="Vitesse"/>
+              xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Vitesse"/>
           </Post>
         );
+      return speedStats;
     }
+    return null;
+  },
+  
+  // Display a zoomable line chart with distance values
+  renderDistance : function (data) {
+     if (data.distance) {
+      //this.props.data.distance.datas = this.props.data.distance.datas.slice(0, 300);
+      var distanceStatsData = [{
+            name : "distance en " + data.distance.units,
+            values : null
+          }];
+      distanceStatsData[0].values = data.distance.data.map(function (data) {
+        return {
+          x : new Date(data.createdAt),
+          y : data.distance * 1000
+        }
+      });
+      console.log(distanceStatsData)
+      distanceStats = (
+          <Post>
+            <LineChart
+              data={distanceStatsData[0].values}
+              width={1200}
+              height={500}
+              legend={true}
+              xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Distance"/>
+          </Post>
+        );
+      return distanceStats;
+    }
+    return null;
+  },
+
+  // Display a pie chart with percentage of activities
+  renderSummary : function () {
+
+  },
+
+  render: function () {    
+    var stats = [],
+        summary = null;
+/*
+    if (this.props.data.daily) {
+      stats.push(this.renderDistance(this.props.data.daily))
+      stats.push(this.renderSpeed(this.props.data.daily))
+    }
+
+    if (this.props.data.weekly) {
+      stats.push(this.renderDistance(this.props.data.weekly))
+      stats.push(this.renderSpeed(this.props.data.weekly))
+    }
+*/
+    if (this.props.data.monthly) {
+      stats.push(this.renderDistance(this.props.data.monthly))
+  //    stats.push(this.renderSpeed(this.props.data.monthly))
+    }
+
     return (
       <section>
-        {distanceStats}
-        {speedStats}
+        {summary}
+        {stats}
       </section>
     )
   }
@@ -74,7 +105,12 @@ var StatsList = React.createClass({displayName: 'StatsList',
 
 var Stats = React.createClass({displayName: 'Stats',
   getInitialState: function() {
-    return {data : []};
+    return {
+        daily : null,
+        weekly : null,
+        monthly : null,
+        summary : null
+    };
   },
 
   load : function () {
@@ -83,7 +119,12 @@ var Stats = React.createClass({displayName: 'Stats',
           credentials: true,
           type: 'json',
           success : function (res, req) {
-            this.setState({data : res.stats})
+            this.setState({
+              daily : res.stats,
+              weekly : this.state.weekly,
+              monthly : this.state.monthly,
+              summary : this.state.summary
+            })
           }.bind(this),
           error : function (data, status,err) {
             console.error(status, err.toString());
@@ -91,6 +132,42 @@ var Stats = React.createClass({displayName: 'Stats',
           }
         })
     req.send();
+    var req2 = H.ajax({
+          url : Config.api.url + '/me/stats/weekly',
+          credentials: true,
+          type: 'json',
+          success : function (res, req) {
+            this.setState({
+              daily : this.state.daily,
+              weekly : res.stats,
+              monthly : this.state.monthly,
+              summary : this.state.summary
+            })
+          }.bind(this),
+          error : function (data, status,err) {
+            console.error(status, err.toString());
+            this.transitionTo('/');
+          }
+        })
+    req2.send();
+    var req3 = H.ajax({
+          url : Config.api.url + '/me/stats/monthly',
+          credentials: true,
+          type: 'json',
+          success : function (res, req) {
+            this.setState({
+              daily : this.state.daily,
+              weekly : this.state.weekly,
+              monthly : res.stats,
+              summary : this.state.summary
+            })
+          }.bind(this),
+          error : function (data, status,err) {
+            console.error(status, err.toString());
+            this.transitionTo('/');
+          }
+        })
+    req3.send();
   },
 
   componentDidMount: function() {
@@ -104,7 +181,7 @@ var Stats = React.createClass({displayName: 'Stats',
         title="Hamsterace > me > stats" 
         onClickHandler={this.onNewPostClick}/>
         <StatsList 
-          data={this.state.data} 
+          data={this.state} 
           onPostFormSubmit={this.onPostFormSubmit} 
           action="/me/feed/post/" 
           avatar="images/avatar-not-found.gif"/>

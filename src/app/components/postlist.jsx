@@ -110,7 +110,7 @@ var Post = React.createClass({
   render: function () {
     return (
       <article>
-        <Paper zDepth={1} className="card">
+        <Paper zDepth={1} className={this.props.className || "card"}>
           <div className="content">
             {this.props.children}
             <DropDownIcon iconClassName="svg-ic_more_vert_grey_24px" menuItems={this.state.actions} />

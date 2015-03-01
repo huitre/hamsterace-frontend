@@ -9,9 +9,23 @@
 
 @import "pages/home.less";
 @import "pages/me.less";
+@import "pages/stats.less";
 
 body {
     color: #212121;
+}
+
+/*
+ * Default layout
+ */
+section#content {
+    margin-left : 21em;
+    margin-top: 12em;
+}
+
+section#content section {
+    margin: auto;
+    width: 80%;
 }
 
 article .avatar {
@@ -21,34 +35,6 @@ article .avatar {
     margin: 2em;
 }
 
-.card {
-    width: 100%;
-    position: relative;
-}
-
-.card .content, .card .comments {
-   display: flex;
-    align-items: flex-start;
-    width: 100%;
-    padding: 8px;
-    border-bottom: 1px solid #C5CAE9;
-}
-
-.card .content img, .card .comments img {
-    margin: 8px;
-    border-radius: 5px;
-}
-
-.card .comments {
-    background-color: #fcfcfc;
-    color: #727272;
-    padding-left: 55px;
-    align-items: flex-start;
-}
-
-.me .card .comments .mui-icon {
-    color: #727272 !important;
-}
 
 #newPost .avatar {
     top: 0;
@@ -69,6 +55,9 @@ article .avatar {
     padding-left: 5.2em;
 }
 
+/*
+ * Cards
+ */
 .card .comments .value {
     color: #727272;
 }
@@ -114,4 +103,33 @@ article .avatar {
 
 .card .inline-form {
     display: flex;
+}
+
+.card {
+    width: 100%;
+    position: relative;
+}
+
+.card .content, .card .comments {
+   display: flex;
+    align-items: flex-start;
+    width: 100%;
+    padding: 8px;
+    border-bottom: 1px solid #C5CAE9;
+}
+
+.card .content img, .card .comments img {
+    margin: 8px;
+    border-radius: 5px;
+}
+
+.card .comments {
+    background-color: #fcfcfc;
+    color: #727272;
+    padding-left: 55px;
+    align-items: flex-start;
+}
+
+.me .card .comments .mui-icon {
+    color: #727272 !important;
 }
