@@ -26,7 +26,7 @@ d3Chart.create = function(el, props, state) {
               "translate(" + margin.left + "," + margin.top + ")")
   
   this.update(el, state);
-};
+}
 
 d3Chart.update = function(el, state) {
   console.log('d3.update');
@@ -35,12 +35,24 @@ d3Chart.update = function(el, state) {
   
   this.drawAxes(el, scales, state.data);
   this.drawPoints(el, scales, state.data);
-};
+  //this.setZoom(el, scales, state.data);
+}
+
+d3Chart.setZoom = function (el, scales, data) {
+  var svg = d3.select(el).selectAll('.d3-path'),
+      zoom = d3.behavior.zoom()
+              .scaleExtent([1, 1])
+              .x(scales.x)
+              .on('zoom', function() { 
+                svg.select('.data').attr('d', drawLines(data, scales));
+              });
+  svg.call(zoom);
+}
 
 d3Chart.destroy = function(el) {
   // Any clean-up would go here
   // in this example there is nothing to do
-};
+}
 
 d3Chart.scales = function (el, domain) {
   console.log('d3.scale');
@@ -83,19 +95,24 @@ d3Chart.drawAxes = function (el, scales, data) {
 }
 
 d3Chart.drawPoints = function (el, scales, data) {
-  var lineFunction =  d3.svg.line()
-                            .x(function (d) { 
-                              return scales.x(new Date(d.x).getTime()); 
-                            })
-                            .y(function (d) { return scales.y(d.y); })
-                            .interpolate("basis");
-
-  var p = d3.select(el).selectAll('.d3-path')
-            .append('svg:path').attr('d', lineFunction(data))
+  var drawLines = d3.svg.line()
+                        .x(function (d) { 
+                          return scales.x(new Date(d.x).getTime()); 
+                        })
+                        .y(function (d) { return scales.y(d.y); })
+                        .interpolate("basis"),                  
+      p = d3.select(el).selectAll('.d3-path')
+            .append('svg:path').attr('d', drawLines(data, scales))
             .style('stroke-width', 1)
             .style('fill', '#fff')
-            .style('stroke', '#3F51B5');
-  
+            .style('stroke', '#3F51B5'),
+      zoom = d3.behavior.zoom()
+              .scaleExtent([1, 1])
+              .x(scales.x)
+              .on('zoom', function() { 
+                p.select('.data').attr('d', drawLines(data, scales));
+              });
+  p.call(zoom);
 }
 
 

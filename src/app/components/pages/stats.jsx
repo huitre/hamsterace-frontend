@@ -78,17 +78,17 @@ var StatsList = React.createClass({displayName: 'StatsList',
   render: function () {    
     var stats = [],
         summary = null;
-/*
+
     if (this.props.data.daily) {
       stats.push(this.renderDistance(this.props.data.daily))
       stats.push(this.renderSpeed(this.props.data.daily))
     }
 
-    if (this.props.data.weekly) {
+    /*if (this.props.data.weekly) {
       stats.push(this.renderDistance(this.props.data.weekly))
       stats.push(this.renderSpeed(this.props.data.weekly))
-    }
-*/
+    }*/
+
     if (this.props.data.monthly) {
       stats.push(this.renderDistance(this.props.data.monthly))
   //    stats.push(this.renderSpeed(this.props.data.monthly))
