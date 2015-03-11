@@ -12,34 +12,50 @@ d3Chart.create = function(el, props, state) {
       width = props.width - margin.left - margin.right,
       height = props.height - margin.top - margin.bottom,
       xAxis, yAxis,
-      svg = d3.select(el);
+      svg = d3.select(el), focus, context;
 
   this.dimensions = {w: width, h: height, margin: margin};
   
-  svg.append('svg')
+  svg = svg.append('svg')
         .attr('class', 'd3')
         .attr('width', width)
         .attr('height', height)
-      .append('g')
-        .attr('class', 'd3-path')
-        .attr('transform', 
-              "translate(" + margin.left + "," + margin.top + ")")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  focus = svg.append("g")
+    .attr("class", "focus")
+
+  svg.append("defs").append("clipPath")
+      .attr("id", "clip")
+    .append("rect")
+      .attr("width", width)
+      .attr("height", height);
+
+
+  context = svg.append("g")
+    .attr("class", "context")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var scales = this.scales(el, state.domain);
   
+  // this.drawAxes(el, scales, state.data);
+
   this.update(el, state);
 }
 
 d3Chart.update = function(el, state) {
   console.log('d3.update');
+
   // Re-compute the scales, and render the data points
   var scales = this.scales(el, state.domain);
   
-  this.drawAxes(el, scales, state.data);
   this.drawPoints(el, scales, state.data);
-  //this.setZoom(el, scales, state.data);
+  this.drawAxes(el, scales, state.data);
+  this.setZoom(el, scales, state.data);
 }
 
 d3Chart.setZoom = function (el, scales, data) {
-  var svg = d3.select(el).selectAll('.d3-path'),
+  var svg = d3.select(el).selectAll('.clipsvg'),
       zoom = d3.behavior.zoom()
               .scaleExtent([1, 1])
               .x(scales.x)
@@ -55,7 +71,7 @@ d3Chart.destroy = function(el) {
 }
 
 d3Chart.scales = function (el, domain) {
-  console.log('d3.scale');
+    console.log('d3.scale');
     if (!domain) {
       return null;
     }
@@ -88,33 +104,28 @@ d3Chart.drawAxes = function (el, scales, data) {
             .scale(scales.y)
             .orient("left");
   
-  svg = d3.select(el).selectAll('.d3');
+  svg = d3.select(el).selectAll('.focus');
   svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + this.dimensions.margin.left + ',' + (this.dimensions.h - this.dimensions.margin.bottom) + ')').call(xAxis);
   svg.append('g').attr('transform', 'translate(' + (this.dimensions.margin.left) + ',' + (this.dimensions.margin.top) + ')')
             .attr('class', 'axis').call(yAxis);
 }
 
 d3Chart.drawPoints = function (el, scales, data) {
-  var drawLines = d3.svg.line()
-                        .x(function (d) { 
-                          return scales.x(new Date(d.x).getTime()); 
-                        })
-                        .y(function (d) { return scales.y(d.y); })
-                        .interpolate("basis"),                  
-      p = d3.select(el).selectAll('.d3-path')
-            .append('svg:path').attr('d', drawLines(data, scales))
-            .style('stroke-width', 1)
-            .style('fill', '#fff')
-            .style('stroke', '#3F51B5'),
-      zoom = d3.behavior.zoom()
-              .scaleExtent([1, 1])
-              .x(scales.x)
-              .on('zoom', function() { 
-                p.select('.data').attr('d', drawLines(data, scales));
-              });
-  p.call(zoom);
-}
+  console.log('d3.drawPoints')
+  var drawLines, p;
 
+  drawLines = d3.svg.line()
+                    .x(function (d) { 
+                      return scales.x(new Date(d.x).getTime()); 
+                    })
+                    .y(function (d) { return scales.y(d.y); })
+                    .interpolate("basis");
+  
+  d3.select(el).selectAll('.focus').append('path').attr('d', drawLines(data, scales))
+          .style('stroke-width', 1)
+          .style('fill', '#fff')
+          .style('stroke', '#3F51B5');
+}
 
 var LineChart = React.createClass({displayName: 'LineChart',
   propTypes: {
@@ -144,11 +155,14 @@ var LineChart = React.createClass({displayName: 'LineChart',
   },
 
   _getDomain: function (data) {
-    var domain = { x : 0, y : 0}
-
+    var domain = { x : 0, y : 0},
+        minDate = new Date(d3.min(data, function (d) { return new Date(d.x).getTime() }) - 8.64e7),
+        maxDate = new Date(d3.max(data, function (d) { return new Date(d.x).getTime() }) + 8.64e7);
     domain.x = [
-            d3.min(data, function (d) { return new Date(d.x).getTime() }), 
-            d3.max(data, function (d) { return new Date(d.x).getTime() })
+            /*d3.min(data, function (d) { return new Date(d.x).getTime() }), 
+            d3.max(data, function (d) { return new Date(d.x).getTime() })*/
+            new Date(minDate - 8.64e7),
+            new Date(maxDate + 8.64e7)
         ];
     domain.y = [
           d3.min(data, function (d) { return d.y }), 
