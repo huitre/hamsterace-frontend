@@ -29,8 +29,8 @@ var StatsList = React.createClass({displayName: 'StatsList',
           <Post>
             <LineChart
               data={speedStatsData}
-              width={1200}
-              height={500}
+              width={1400}
+              height={600}
               legend={true}
               xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Vitesse"/>
           </Post>
@@ -54,13 +54,13 @@ var StatsList = React.createClass({displayName: 'StatsList',
           y : data.distance * 1000
         }
       });
-      console.log(distanceStatsData)
+      
       distanceStats = (
-          <Post>
+          <Post ref="post">
             <LineChart
               data={distanceStatsData[0].values}
-              width={1200}
-              height={500}
+              width={1400}
+              height={700}
               legend={true}
               xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Distance"/>
           </Post>
@@ -81,19 +81,19 @@ var StatsList = React.createClass({displayName: 'StatsList',
 
     if (this.props.data.daily) {
       stats.push(this.renderDistance(this.props.data.daily))
-      stats.push(this.renderSpeed(this.props.data.daily))
+      //stats.push(this.renderSpeed(this.props.data.daily))
     }
 
-    /*if (this.props.data.weekly) {
-      stats.push(this.renderDistance(this.props.data.weekly))
-      stats.push(this.renderSpeed(this.props.data.weekly))
-    }*/
+    if (this.props.data.weekly) {
+      //stats.push(this.renderDistance(this.props.data.weekly))
+      //stats.push(this.renderSpeed(this.props.data.weekly))
+    }
 
     if (this.props.data.monthly) {
-      stats.push(this.renderDistance(this.props.data.monthly))
+      //stats.push(this.renderDistance(this.props.data.monthly))
   //    stats.push(this.renderSpeed(this.props.data.monthly))
     }
-
+    
     return (
       <section>
         {summary}
@@ -132,11 +132,12 @@ var Stats = React.createClass({displayName: 'Stats',
           }
         })
     req.send();
-    var req2 = H.ajax({
+    /*var req2 = H.ajax({
           url : Config.api.url + '/me/stats/weekly',
           credentials: true,
           type: 'json',
           success : function (res, req) {
+            console.log(res, req)
             this.setState({
               daily : this.state.daily,
               weekly : res.stats,
@@ -150,7 +151,7 @@ var Stats = React.createClass({displayName: 'Stats',
           }
         })
     req2.send();
-    var req3 = H.ajax({
+    /*var req3 = H.ajax({
           url : Config.api.url + '/me/stats/monthly',
           credentials: true,
           type: 'json',
@@ -167,7 +168,7 @@ var Stats = React.createClass({displayName: 'Stats',
             this.transitionTo('/');
           }
         })
-    req3.send();
+    req3.send();*/
   },
 
   componentDidMount: function() {
