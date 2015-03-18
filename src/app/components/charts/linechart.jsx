@@ -111,6 +111,11 @@ d3Chart.prototype.drawAxes = function (el, scales, data) {
 
 }
 
+d3Chart.prototype.resize = function (el, state) {
+  this.dimensions.w = el.clientWidth - this.dimensions.margin.left - this.dimensions.margin.right;
+  this.update(el, state);
+}
+
 d3Chart.prototype.drawPoints = function (el, scales, data) {
   //console.log('d3.drawPoints', el, scales, data);
   var drawLines, // draw method for main area 
@@ -249,13 +254,18 @@ var LineChart = React.createClass({displayName: 'LineChart',
   },
 
   componentDidMount: function() {
-   // console.log('LineChart.didmount')
+    var self = this;
     this._id = this.generateId();
-    this.el = document.querySelector('#' + this._id);
-    //console.log(this.el, this._id, this.getDOMNode());
+    this.el = document.querySelector('#' + this._id) || this.getDOMNode();
+
+    if (!this.props.width)
+      window.addEventListener('resize', function (e) {
+        self.resize(self.el, self.getChartState())
+      })
+    
     this.d3Chart = new d3Chart({
-        width: this.props.width,
-        height: this.props.height
+        width: this.props.width || this.el.parentElement.clientWidth,
+        height: this.props.height || this.el.parentElement.clientHeight
       });
 
     this.d3Chart.create(this.getDOMNode(), this.getChartState());

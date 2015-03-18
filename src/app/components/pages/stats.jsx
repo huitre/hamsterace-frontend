@@ -57,14 +57,14 @@ var Stats = React.createClass({displayName: 'Stats',
         data = this.state[type].distance.data.map(function (data) {
           return {
             x : new Date(data.createdAt),
-            y : data.distance * 1000
+            y : (data.distance || data.content ) * 1000
           }
         });
+        
         distanceStats.push(
           <Post ref="post">
             <LineChart
               data={data}
-              width={1400}
               height={700}
               legend={true}
               xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Distance"/>
