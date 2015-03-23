@@ -19,6 +19,8 @@ var d3Chart = function (props) {
     margin: margin, 
     context: context
   };
+
+  this.interpolate = props.interpolate || 'basis';
 };
 
 d3Chart.prototype.create = function(el, state) {
@@ -34,16 +36,29 @@ d3Chart.prototype.create = function(el, state) {
         .attr('height', this.dimensions.oh)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  // main drawing area
   focus = svg.append("g")
-    .attr("class", "focus")
-    .attr('width', this.dimensions.ow)
-    .attr('height', this.dimensions.oh)
+      .attr("class", "focus")
+      .attr('width', this.dimensions.ow)
+      .attr('height', this.dimensions.oh)
+  
+  focus.append('path')
+  focus.append('g').attr('class', 'x axis')
+  focus.append('g').attr('class', 'y axis')
 
+
+  // mini map drawing area
   context = svg.append("g")
     .attr("class", "context")
     .attr('height', this.dimensions.context.h)
     .attr("transform", "translate(0," + (margin.top + this.dimensions.context.h) + ")")
   
+  context.append('path')
+  context.append("g").attr("class", "x axis")
+  context.append("g")
+      .attr("class", "x brush")
+      .attr("transform", 'translate(0,' + (this.dimensions.h - this.dimensions.context.h - this.dimensions.margin.bottom) + ')')
+
   svg.append("defs").append("clipPath")
       .attr("id", "clip")
     .append("rect")
@@ -142,22 +157,20 @@ d3Chart.prototype.drawPoints = function (el, scales, data) {
             .orient("left");
   
   drawLines = d3.svg.line()
+                .defined(function(d) { return d.y != null; })
                 .x(function (d) { 
                   return scales.x(d.x); 
                 })
-                .y(function (d) { return scales.y(d.y); })
-                .interpolate("basis");
-
-  svg = d3.select(el).selectAll('.focus');
+                .y(function (d) {return scales.y(d.y); })
+                .interpolate(this.interpolate);
   focus = d3.select(el).selectAll('.focus');
   
   // we create x axxis and y axxis
-  svg.append('g').attr('class', 'x axis').attr('transform', 'translate(0,' + (this.dimensions.h - this.dimensions.margin.bottom) + ')').call(xAxis);
-  svg.append('g').attr('transform', 'translate(' + (this.dimensions.margin.left) + ',' + (this.dimensions.margin.top) + ')')
-            .attr('class', 'axis').call(yAxis);
+  focus.select('.x.axis').attr('transform', 'translate(0,' + (this.dimensions.h - this.dimensions.margin.bottom) + ')').call(xAxis);
+  focus.select('.y.axis').attr('transform', 'translate(' + (this.dimensions.margin.left) + ',' + (this.dimensions.margin.top) + ')').call(yAxis);
 
                 
-  focus.append('path')
+  focus.select('path')
           .datum(data)
           .attr('class', 'chart')
           .attr('d', drawLines)
@@ -171,19 +184,19 @@ d3Chart.prototype.drawPoints = function (el, scales, data) {
   context = d3.select(el).selectAll('.context');
 
   drawContextLines = d3.svg.line()
+                      .defined(function(d) { return d.y != null; })
                       .x(function (d) { 
                         return scales.context.x(d.x); 
                       })
                       .y(function (d) { return scales.context.y(d.y); })
-                      .interpolate("basis");
+                      .interpolate(this.interpolate);
 
-  context.append("g")
-      .attr("class", "x axis")
+  context.select('.x.axis')
       .attr("transform", 'translate(0,' + (this.dimensions.h - this.dimensions.margin.bottom) + ')')
       .call(xAxisContext);
 
   
-  context.append('path')
+  context.select('path')
           .datum(data)
           .attr("transform", 'translate(0,' + (this.dimensions.h - this.dimensions.context.h - this.dimensions.margin.bottom) + ')')
           .attr('d', drawContextLines)
@@ -197,13 +210,13 @@ d3Chart.prototype.drawPoints = function (el, scales, data) {
     focus.select("path.chart").attr("d", drawLines);
     focus.select(".x.axis").call(xAxis);
   }
+
   var brush = d3.svg.brush()
     .x(scales.context.x)
-    .on("brush", brushed);
+    .on('brush', brushed)
 
- context.append("g")
-      .attr("class", "x brush")
-      .attr("transform", 'translate(0,' + (this.dimensions.h - this.dimensions.context.h - this.dimensions.margin.bottom) + ')')
+
+ context.select('.x.brush')
       .call(brush)
     .selectAll("rect")
       .attr("y", -6)
@@ -260,21 +273,16 @@ var LineChart = React.createClass({displayName: 'LineChart',
 
     if (!this.props.width)
       window.addEventListener('resize', function (e) {
-        self.resize(self.el, self.getChartState())
+        self.d3Chart.resize(self.el, self.getChartState())
       })
     
     this.d3Chart = new d3Chart({
         width: this.props.width || this.el.parentElement.clientWidth,
-        height: this.props.height || this.el.parentElement.clientHeight
+        height: this.props.height || this.el.parentElement.clientHeight,
+        interpolate: this.props.interpolate
       });
 
     this.d3Chart.create(this.getDOMNode(), this.getChartState());
-  },
-
-  componentDidUpdate: function() {
-    var el = this.getDOMNode(); 
-    
-    /*this.d3Chart.update(this.getDOMNode(), this.getChartState());*/
   },
 
   getChartState: function() {
@@ -289,15 +297,18 @@ var LineChart = React.createClass({displayName: 'LineChart',
   },
 
   getDomain: function (data) {
-    var domain = { x : 0, y : 0}
+    var domain = { x : 0, y : 0}, max, min;
 
     domain.x = [
             d3.min(data, function (d) { return new Date(d.x) }),
             d3.max(data, function (d) { return new Date(d.x) })
         ];
+
+    min = d3.min(data, function (d) { return d.y });
+    max = d3.max(data, function (d) { return d.y });
     domain.y = [
-          d3.min(data, function (d) { return d.y }), 
-          d3.max(data, function (d) { return d.y })
+          min, 
+          max + max * 0.1
         ];
     
     return domain;

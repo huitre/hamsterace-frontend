@@ -12,6 +12,7 @@ var React = require('react'),
 var Stats = React.createClass({displayName: 'Stats',
   getInitialState: function() {
     return {
+        "hourly" : null,
         "daily" : null,
         "weekly" : null,
         "monthly" : null,
@@ -20,7 +21,7 @@ var Stats = React.createClass({displayName: 'Stats',
   },
 
   load : function () {
-    var stats = ['daily', 'weekly', 'monthly'], self = this;
+    var stats = ['hourly', 'daily', 'weekly', 'monthly'], self = this;
 
     for (var i in stats) {
       (function (type, self) {
@@ -50,24 +51,33 @@ var Stats = React.createClass({displayName: 'Stats',
 
   render: function() {
     
-    var distanceStats = [], data;
+    var distanceStats = [], data, title;
 
     for (var type in this.state) {
       if (this.state[type] && this.state[type].hasOwnProperty('distance')) {
         data = this.state[type].distance.data.map(function (data) {
+          var y = (data.distance || data.content );
+          
+          y = y || 0;
+
           return {
             x : new Date(data.createdAt),
-            y : (data.distance || data.content ) * 1000
+            y : y / 100
           }
         });
         
+        if (type == 'monthly')
+          console.log(data)
+        title = "Distance en mètres " + type;
+
         distanceStats.push(
-          <Post ref="post">
+          <Post ref="post" title={title}>
             <LineChart
               data={data}
               height={700}
               legend={true}
-              xAxisTickInterval={{unit: 'minutes', interval: 1}}  title="Distance"/>
+              interpolate="linear"
+              xAxisTickInterval={{unit: 'minutes', interval: 1}}/>
           </Post>
         )
       }
