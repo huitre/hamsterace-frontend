@@ -2955,7 +2955,7 @@ article .avatar {
   display: flex;
 }
 .card {
-  width: 100%;
+  /* width: 100%; */
   position: relative;
 }
 .card .content,
@@ -2965,7 +2965,7 @@ article .avatar {
   display: flex;
   -webkit-align-items: flex-start;
   -ms-flex-align: start;
-  align-items: flex-start;
+  /* align-items: flex-start; */
   width: 100%;
   padding: 8px;
   border-bottom: 1px solid #C5CAE9;

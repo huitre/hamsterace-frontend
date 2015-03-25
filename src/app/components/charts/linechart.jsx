@@ -128,6 +128,11 @@ d3Chart.prototype.drawAxes = function (el, scales, data) {
 
 d3Chart.prototype.resize = function (el, state) {
   this.dimensions.w = el.clientWidth - this.dimensions.margin.left - this.dimensions.margin.right;
+
+  d3.select(el).select('#clip').select('rect')
+    .attr("width", this.dimensions.w - this.dimensions.margin.right)
+    .attr("height", this.dimensions.h)
+
   this.update(el, state);
 }
 

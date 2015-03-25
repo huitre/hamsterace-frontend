@@ -108,9 +108,19 @@ var Post = React.createClass({
     req.send();
   },
   render: function () {
-    var title = "";
+    var title = "",
+        commentBox = ""
+
     if (this.props.title)
       title = <h1>{this.props.title}</h1>
+
+    if (this.props.postId)
+      commentBox = <CommentBox 
+                      avatar='images/avatar-not-found.gif'
+                      postId={this.props.postId}
+                      data={this.state.comments} 
+                      onCommentFormSubmit={this.handleCommentSubmit} 
+                      key={'commentbox-' + this.props.postId}/>
     return (
       <article>
         <Paper zDepth={1} className={this.props.className || "card"}>
@@ -119,12 +129,7 @@ var Post = React.createClass({
             {this.props.children}
             <DropDownIcon iconClassName="svg-ic_more_vert_grey_24px" menuItems={this.state.actions} />
           </div>
-          <CommentBox 
-            avatar='images/avatar-not-found.gif'
-            postId={this.props.postId}
-            data={this.state.comments} 
-            onCommentFormSubmit={this.handleCommentSubmit} 
-            key={'commentbox-' + this.props.postId}/>
+          {commentBox}
         </Paper>
       </article>
     );

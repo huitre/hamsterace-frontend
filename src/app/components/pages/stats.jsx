@@ -1,12 +1,13 @@
 var React = require('react'),
     Router = require('react-router'),
     mui = require('material-ui'),
+    Tabs = mui.Tabs,
+    Tab = mui.Tab,
     LineChart = require('../charts/linechart.jsx'),
     Config = require('../../config'),
 
-    PostList = require('../postlist.jsx').PostList,
-    Post = require('../postlist.jsx').Post,
-    HappBar = require('../happbar.jsx');
+    Card = require('../card.jsx'),
+    HappBar = require('../happbar.jsx'); 
 
 
 var Stats = React.createClass({displayName: 'Stats',
@@ -69,26 +70,29 @@ var Stats = React.createClass({displayName: 'Stats',
         if (type == 'monthly')
           console.log(data)
         title = "Distance en mètres " + type;
-
+        console.log('pushing ' + type, this.state[type].distance.data.length)
         distanceStats.push(
-          <Post ref="post" title={title}>
+          <Card title="Distance">
             <LineChart
               data={data}
-              height={700}
+              height={500}
               legend={true}
+              className="tab-template-container"
               interpolate="linear"
               xAxisTickInterval={{unit: 'minutes', interval: 1}}/>
-          </Post>
+          </Card>
         )
       }
     }
+
+    console.log(distanceStats)
 
     return (
       <section id="content">
         <HappBar
         title="Hamsterace > me > stats" />
         <section>
-        {distanceStats}
+          {distanceStats}
         </section>
       </section>
     );
