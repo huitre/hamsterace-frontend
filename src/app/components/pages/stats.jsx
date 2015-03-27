@@ -88,13 +88,38 @@ var Stats = React.createClass({displayName: 'Stats',
     console.log(distanceStats)
 
     return (
-      <section id="content">
-        <HappBar
-        title="Hamsterace > me > stats" />
-        <section>
-          {distanceStats}
-        </section>
-      </section>
+      
+      <Tabs> 
+        <Tab label="Item One" > 
+          <div className="tab-template-container"> 
+            <h2 className="mui-font-style-headline">Tab One Template Example</h2> 
+            <p> 
+              This is an example of a tab template! 
+            </p> 
+            <p> 
+              You can put any sort of HTML or react component in here. 
+            </p> 
+          </div> 
+        </Tab> 
+        <Tab label="Item Two" > 
+          <div className="tab-template-container"> 
+            <h2 className="mui-font-style-headline">Tab Two Template Example</h2> 
+            <p> 
+              This is another example of a tab template! 
+            </p> 
+            <p> 
+              Fair warning - the next tab routes to home! 
+            </p> 
+          </div> 
+        </Tab> 
+        <Tab 
+          label="Item Three" 
+          route="home" 
+          > 
+        {distanceStats}
+        </Tab>
+      </Tabs> 
+      
     );
   }  
 });

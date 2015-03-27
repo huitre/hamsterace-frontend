@@ -56,13 +56,9 @@ var Feed = React.createClass({
   },
 
   render: function() {
+    console.log(this.props)
     return (
-      <section id="content">
-        <HappBar
-        title="Hamsterace > me > feed" 
-        onClickHandler={this.onNewPostClick}/>
-        <PostList showForm={true} data={this.state.data} onPostFormSubmit={this.onPostFormSubmit} action="/me/feed/post/" avatar="images/avatar-not-found.gif"/>
-      </section>
+      <PostList showForm={true} data={this.state.data} onPostFormSubmit={this.onPostFormSubmit} action="/me/feed/post/" avatar="images/avatar-not-found.gif"/>
     );
   }  
 });

@@ -4,7 +4,8 @@ var React = require('react');
 
     mui = require('material-ui'),
     AppCanvas = mui.AppCanvas,
-    LeftNav = require('../leftnav.jsx');
+    LeftNav = require('../leftnav.jsx'),
+    HappBar = require('../happbar.jsx');
 
 var Me = React.createClass({
 
@@ -13,12 +14,25 @@ var Me = React.createClass({
   render: function () {
     return (
       <AppCanvas predefinedLayout={1} className="me">
-        <LeftNav />
-          <RouteHandler me={this.props.me} />
+        <section id="content">
+          <LeftNav ref="leftnav"/>
+          <HappBar
+          title="Statistiques" 
+            ref="appbar" 
+            onMenuIconButtonTouchTap={this._onMenuIconButtonTouchTap} />
+            <RouteHandler 
+              me={this.props.me} 
+              appbar={this.refs.appbar} 
+              leftnav={this.refs.leftnav} />
+        </section>
       </AppCanvas>
     );
   },
-  _onMenuIconButtonTouchTap : function () {}
+
+  _onMenuIconButtonTouchTap: function() {
+    if (this.refs.leftnav)
+      this.refs.leftnav.toggle()
+  }
 });
 
 module.exports = Me;

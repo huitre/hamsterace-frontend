@@ -7,11 +7,11 @@ var React = require('react'),
 
 
 var HappBar = React.createClass({
-  onMenuIconButtonTouchTap: function () {},
   onMenuChange: function (e) {
     console.log(e)
   },
   render: function () {
+    console.log(this.refs)
     var iconMenuItems = [
            { payload: '1', text: 'Se deconnecter'},
         ];
@@ -20,7 +20,7 @@ var HappBar = React.createClass({
           <nav>
             <DropDownIcon iconClassName="svg-ic_more_vert_24px" menuItems={iconMenuItems} onChange={this.onMenuChange}/>
             <IconButton
-              iconClassName="svg-ic_menu_24px"/>
+              iconClassName="svg-ic_menu_24px" onClick={this.props.onMenuIconButtonTouchTap}/>
             <IconButton iconClassName="svg-ic_search_24px" />
           </nav>
           <h1>{this.props.title}</h1>

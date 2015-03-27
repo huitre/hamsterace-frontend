@@ -29,8 +29,8 @@ var LeftNav = React.createClass({
     return (
       <mui.LeftNav 
         ref="leftNav"
-        docked={true}
-        isInitiallyOpen={true}
+        docked={false}
+        isInitiallyOpen={false}
         header={header}
         menuItems={menuItems}
         selectedIndex={this._getSelectedIndex()}
@@ -56,7 +56,6 @@ var LeftNav = React.createClass({
   },
 
   _onHeaderClick: function() {
-    this.transitionTo('root');
     this.refs.leftNav.close();
   }
 
