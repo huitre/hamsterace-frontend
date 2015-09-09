@@ -7,14 +7,34 @@ var React = require('react'),
 
 
 var HappBar = React.createClass({
-  onMenuChange: function (e) {
-    console.log(e)
+
+  getInitialState : function () {
+    return {
+      title : ''
+    }
   },
+
+  setTitle : function (title) {
+    this.setState({title: title});
+  },
+
+  onMenuChange: function (e) {
+    
+  },
+
   render: function () {
-    console.log(this.refs)
     var iconMenuItems = [
            { payload: '1', text: 'Se deconnecter'},
-        ];
+        ], mainAction;
+
+    if (this.props.mainAction) {
+      mainAction = <div id="mainAction">
+        <FloatButton iconClassName="svg-ic_add_24px" onClick={this.props.onClickHandler}/>
+      </div>
+    } else {
+      mainAction = <div/>
+    }
+  
     return (
         <AppBar showMenuIconButton={false}>
           <nav>
@@ -23,10 +43,8 @@ var HappBar = React.createClass({
               iconClassName="svg-ic_menu_24px" onClick={this.props.onMenuIconButtonTouchTap}/>
             <IconButton iconClassName="svg-ic_search_24px" />
           </nav>
-          <h1>{this.props.title}</h1>
-          <div id="mainAction">
-            <FloatButton iconClassName="svg-ic_add_24px" onClick={this.props.onClickHandler}/>
-          </div>
+          <h1>{this.state.title}</h1>
+          {mainAction}
         </AppBar>
       );
   }

@@ -12,12 +12,12 @@ var Me = React.createClass({
   mixins: [Router.State, Router.Navigation],
 
   render: function () {
+    console.log('Me.jsx.render', this)
     return (
       <AppCanvas predefinedLayout={1} className="me">
         <section id="content">
           <LeftNav ref="leftnav"/>
           <HappBar
-          title="Statistiques" 
             ref="appbar" 
             onMenuIconButtonTouchTap={this._onMenuIconButtonTouchTap} />
             <RouteHandler 

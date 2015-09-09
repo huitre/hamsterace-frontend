@@ -36,7 +36,6 @@ module.exports = {
   browserify: {
     // Enable source maps
     debug: true,
-    zlib: true,
     // A separate bundle will be generated for each
     // bundle config in the list below
     bundleConfigs: [{

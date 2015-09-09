@@ -2,7 +2,7 @@
 * @Author: joffrey.gohin
 * @Date:   2014-08-05 15:22:13
 * @Last Modified by:   huitre
-* @Last Modified time: 2015-02-19 20:14:16
+* @Last Modified time: 2015-05-02 15:13:03
 */
 
 !(function () {
@@ -45,6 +45,18 @@
             return c.substring(nameEQ.length, c.length);
         }
       }
+    }
+
+    H.prototype.converter = function () {}
+    H.prototype.converter.toKm =function (distance) {
+      var i = 0,
+          units = ['cm', 'm', 'km'];
+      while (distance > 1000) {
+        i++;
+        distance = distance / 1000;
+      }
+
+      return Math.round(distance * 100) /100 + units[i];
     }
 
     // ajax
@@ -147,6 +159,10 @@
 
       if (options.url) {
         xhr.open(method, options.url, async)
+      }
+
+      if (options.error) {
+        xhr.onerror = options.error
       }
 
       this.send = function () {
@@ -282,6 +298,7 @@
         [this.getHours(), this.getMinutes(), this.getSeconds()].map(pad).join(':')
       ].join(' ')
   }
+
 
 
 })()

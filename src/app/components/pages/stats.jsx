@@ -52,74 +52,62 @@ var Stats = React.createClass({displayName: 'Stats',
 
   render: function() {
     
-    var distanceStats = [], data, title;
+    var stats = {}, // React.Card 
+        tabs = [], 
+        data, // data transformee pour le graph
+        title, 
+        dataType = ['distance', 'speed'], // types de data
+        i;
 
     for (var type in this.state) {
-      if (this.state[type] && this.state[type].hasOwnProperty('distance')) {
-        data = this.state[type].distance.data.map(function (data) {
-          var y = (data.distance || data.content );
+      Stats[type] = [];
+      for (var dType in dataType) {       
+        if (this.state[type] && this.state[type].hasOwnProperty(dataType[dType])) {
+          i = this.state[type][dataType[dType]];
           
-          y = y || 0;
+          data = i.data.map(function (data) {
+            var y = (data.distance || data.content );
+            
+            y = y || 0;
 
-          return {
-            x : new Date(data.createdAt),
-            y : y / 100
-          }
-        });
-        
-        if (type == 'monthly')
-          console.log(data)
-        title = "Distance en mètres " + type;
-        console.log('pushing ' + type, this.state[type].distance.data.length)
-        distanceStats.push(
-          <Card title="Distance">
-            <LineChart
-              data={data}
-              height={500}
-              legend={true}
-              className="tab-template-container"
-              interpolate="linear"
-              xAxisTickInterval={{unit: 'minutes', interval: 1}}/>
-          </Card>
-        )
+            return {
+              x : new Date(data.createdAt),
+              y : y / 100
+            }
+          });
+          
+
+          title = dataType[dType] + "en " +  + type;
+          
+          stats[type] = 
+            <Card title="Distance" id={'card-' + type}>
+              <LineChart
+                data={data}
+                height={500}
+                max={i.max}
+                average={i.average}
+                legend={true}
+                interpolate="basis" />
+            </Card>
+          
+        }
       }
     }
 
-    console.log(distanceStats)
+    for (var s in stats) {
+      tabs.push(
+        <Tab
+          label={s}>
+            {stats[s]}
+        </Tab>
+      )
+    }
+
 
     return (
-      
-      <Tabs> 
-        <Tab label="Item One" > 
-          <div className="tab-template-container"> 
-            <h2 className="mui-font-style-headline">Tab One Template Example</h2> 
-            <p> 
-              This is an example of a tab template! 
-            </p> 
-            <p> 
-              You can put any sort of HTML or react component in here. 
-            </p> 
-          </div> 
-        </Tab> 
-        <Tab label="Item Two" > 
-          <div className="tab-template-container"> 
-            <h2 className="mui-font-style-headline">Tab Two Template Example</h2> 
-            <p> 
-              This is another example of a tab template! 
-            </p> 
-            <p> 
-              Fair warning - the next tab routes to home! 
-            </p> 
-          </div> 
-        </Tab> 
-        <Tab 
-          label="Item Three" 
-          route="home" 
-          > 
-        {distanceStats}
-        </Tab>
+      <Tabs>
+        {tabs}
       </Tabs> 
-      
     );
   }  
 });

@@ -63,7 +63,6 @@ var Main = React.createClass({
           type: 'json',
           async: false,
           success : function (res, req) {
-            console.log(res, req);
             H.cookie('profile', res, 20);
             H.cookie('isLogged', true, 20);
             self.setState({
@@ -73,11 +72,12 @@ var Main = React.createClass({
             self.transitionTo('/me/feed');
           },
           error : function (e) {
+            console.log('home.jsx', e);
             self.setState({data: [], isLogged: false});
           }
         })
     req.send();
-    this.setState({isLogged: this.isLogged()})
+    //this.setState({isLogged: this.isLogged()})
   },
 
   onGoogleClick: function () {

@@ -56,7 +56,6 @@ var Feed = React.createClass({
   },
 
   render: function() {
-    console.log(this.props)
     return (
       <PostList showForm={true} data={this.state.data} onPostFormSubmit={this.onPostFormSubmit} action="/me/feed/post/" avatar="images/avatar-not-found.gif"/>
     );

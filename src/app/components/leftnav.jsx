@@ -9,6 +9,7 @@ var React = require('react'),
     { route: '/me/feed', text: 'Mes Actus' },
     { route: '/me/stats', text: 'Mes Statistiques' },
     { route: '/me/friends', text: 'Mes Amis' },
+    { route: '/me/ranking', text: 'Le Classement'},
     { route: '/me/badges', text: 'Mes Badges' },
     { route: '/me/guild', text: 'Ma guilde' }
   ];
